@@ -58,7 +58,7 @@ exports.register = async (req, res) => {
         });
     } catch (error) {
         console.error('Register Error:', error);
-        res.status(400).json({
+        res.status(500).json({
             success: false,
             message: error.message || 'Server error during registration'
         });
@@ -72,7 +72,6 @@ exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validation
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
@@ -80,8 +79,8 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Check for user
         const user = await User.findOne({ email }).select('+password');
+        
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -89,7 +88,6 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Check if password matches
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
             return res.status(401).json({
@@ -98,7 +96,6 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Create token
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
             expiresIn: '7d'
         });
@@ -117,7 +114,7 @@ exports.login = async (req, res) => {
         });
     } catch (error) {
         console.error('Login Error:', error);
-        res.status(400).json({
+        res.status(500).json({
             success: false,
             message: error.message || 'Server error during login'
         });

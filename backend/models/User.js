@@ -20,13 +20,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a password'],
         minlength: 6,
-        select: false // Don't return password by default
+        select: false 
     }
 }, {
     timestamps: true
 });
 
-// Encyrpt password using bcrypt
+// Encrypt password
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) {
         next();
@@ -35,7 +35,7 @@ userSchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Match user entered password to hashed password in database
+// Match password
 userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };

@@ -42,9 +42,10 @@ exports.getTrain = async (req, res, next) => {
 
 // @desc    Create new train
 // @route   POST /api/trains
-// @access  Public (or Private if you add auth)
+// @access  Public
 exports.createTrain = async (req, res, next) => {
     try {
+        // This will now include 'departure' and 'destination' from the form
         const train = await Train.create(req.body);
 
         res.status(201).json({
@@ -52,7 +53,6 @@ exports.createTrain = async (req, res, next) => {
             data: train
         });
     } catch (error) {
-        // Handle duplicate key error (if train number already exists)
         if (error.code === 11000) {
             return res.status(400).json({ success: false, message: 'Train Number already exists' });
         }
@@ -75,7 +75,7 @@ exports.updateTrain = async (req, res, next) => {
         }
 
         train = await Train.findByIdAndUpdate(req.params.id, req.body, {
-            new: true, // Return the updated object
+            new: true,
             runValidators: true
         });
 

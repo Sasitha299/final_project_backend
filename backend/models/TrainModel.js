@@ -13,16 +13,23 @@ const trainSchema = new mongoose.Schema({
         trim: true
     },
     departureTime: {
-        type: String, // You can also use Date if you need strict parsing
+        type: String,
         required: [true, 'Please add a Departure Time']
     },
-    departureStation: {
+    // Changed from 'departureStation' to 'departure'
+    departure: {
         type: String,
         required: [true, 'Please add a Departure Station'],
         trim: true
+    },
+    // Added new field 'destination'
+    destination: {
+        type: String,
+        required: [true, 'Please add a Destination Station'],
+        trim: true
     }
 }, {
-    timestamps: true // Adds createdAt and updatedAt fields automatically
+    timestamps: true 
 });
 
 module.exports = mongoose.model('Train', trainSchema);

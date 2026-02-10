@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const trainRoutes = require('./routes/TrainRoute'); 
-const newsRoutes = require('./routes/NewsRoute'); // <--- 1. IMPORT NEWS ROUTES
+const newsRoutes = require('./routes/NewsRoute'); 
+const localNewsRoutes = require('./routes/LocalNewsRoute'); // <--- ADDED IMPORT
 
 const app = express();
 
@@ -13,7 +14,8 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/trains', trainRoutes);
-app.use('/api/news', newsRoutes); // <--- 2. USE NEWS ROUTES
+app.use('/api/news', newsRoutes); 
+app.use('/api/localnews', localNewsRoutes); // <--- ADDED ROUTE USE
 
 // Error Handler middleware
 app.use((err, req, res, next) => {

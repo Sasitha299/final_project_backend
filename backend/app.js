@@ -1,9 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-const authRoutes = require('./routes/authRoutes');
+
+// Import Routes
+const authRoutes = require('./routes/authRoutes'); // Handles Auth AND User CRUD
 const trainRoutes = require('./routes/TrainRoute'); 
 const newsRoutes = require('./routes/NewsRoute'); 
-const localNewsRoutes = require('./routes/LocalNewsRoute'); // <--- ADDED IMPORT
+const localNewsRoutes = require('./routes/LocalNewsRoute'); 
 
 const app = express();
 
@@ -11,13 +13,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use('/api/auth', authRoutes);
+// Mount Routes
+app.use('/api/auth', authRoutes); // All user logic is now under /api/auth
 app.use('/api/trains', trainRoutes);
 app.use('/api/news', newsRoutes); 
-app.use('/api/localnews', localNewsRoutes); // <--- ADDED ROUTE USE
+app.use('/api/localnews', localNewsRoutes); 
 
-// Error Handler middleware
+// Error Handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({

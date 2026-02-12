@@ -118,7 +118,7 @@ export default function TrainPage() {
               <div className="p-2 bg-indigo-600 rounded-lg shadow-lg shadow-indigo-500/20">
                 <Train className="text-white" size={24} />
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-white">RailMaster <span className="text-indigo-400">Pro</span></h1>
+              <h1 className="text-xl font-bold tracking-tight text-white">Wellcome To <span className="text-indigo-400">RailPulse</span></h1>
             </div>
             <button 
               onClick={handleAddClick}

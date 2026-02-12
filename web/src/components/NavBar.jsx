@@ -26,7 +26,7 @@ export default function SideBar() {
 
       {/* Logo */}
       <div className="px-6 py-6 text-2xl font-bold tracking-wide text-white border-b border-slate-700">
-        <span className="text-emerald-400">Rail</span>Connect
+        <span className="text-emerald-400">Rail</span>Pulse
       </div>
 
       {/* Menu */}
@@ -79,7 +79,7 @@ export default function SideBar() {
             ${newsOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}
           >
             <Link
-              to="/news/local"
+              to="/localnews"
               onClick={handleItemClick}
               className="block px-4 py-2 rounded-md text-sm cursor-pointer transition-all duration-300
               hover:bg-emerald-500 hover:text-black"
@@ -88,7 +88,7 @@ export default function SideBar() {
             </Link>
 
             <Link
-              to="/news/train"
+              to="/trainnews"
               onClick={handleItemClick}
               className="block px-4 py-2 rounded-md text-sm cursor-pointer transition-all duration-300
               hover:bg-emerald-500 hover:text-black"
@@ -138,7 +138,7 @@ export default function SideBar() {
 
       {/* Footer */}
       <div className="px-4 py-4 text-xs text-slate-400 border-t border-slate-700">
-        © RailConnect System
+        © RailPulse System
       </div>
     </div>
   );

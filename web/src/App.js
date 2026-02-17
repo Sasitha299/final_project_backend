@@ -6,6 +6,9 @@ import Train from './pages/Train.jsx';
 import User from './pages/User.jsx';
 import LocalNews from './pages/LocalNews.jsx';
 import TrainNews from './pages/TrainNews.jsx';
+import Lost from './pages/Lost.jsx';
+
+
 
 function App() {
   return (
@@ -18,6 +21,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/train" element={<Train />} />
           <Route path="/user" element={<User />} />
+          <Route path="/lost" element={<Lost />} />
           <Route path="/localnews" element={<LocalNews />} />
           <Route path="/trainnews" element={<TrainNews />} />
 

@@ -6,6 +6,7 @@ const authRoutes = require('./routes/authRoutes'); // Handles Auth AND User CRUD
 const trainRoutes = require('./routes/TrainRoute'); 
 const newsRoutes = require('./routes/NewsRoute'); 
 const localNewsRoutes = require('./routes/LocalNewsRoute'); 
+const lostRoutes = require('./routes/LostRoute');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use('/api/auth', authRoutes); // All user logic is now under /api/auth
 app.use('/api/trains', trainRoutes);
 app.use('/api/news', newsRoutes); 
 app.use('/api/localnews', localNewsRoutes); 
+app.use('/api/lost', lostRoutes);
 
 // Error Handler
 app.use((err, req, res, next) => {

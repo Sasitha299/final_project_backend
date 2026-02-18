@@ -14,6 +14,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req,res)=>{
+    res.send("Backend Running 🚀");
+});
+
+
 // Mount Routes
 app.use('/api/auth', authRoutes); // All user logic is now under /api/auth
 app.use('/api/trains', trainRoutes);

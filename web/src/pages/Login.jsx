@@ -38,7 +38,7 @@ const Login = () => {
       localStorage.setItem('user', JSON.stringify(data.data.user));
 
       // Redirect to home page
-      navigate('/'); 
+      navigate('/user'); 
     } catch (err) {
       setError(err.message);
     }

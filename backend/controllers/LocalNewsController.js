@@ -62,6 +62,7 @@ exports.updateLocalNews = async (req, res, next) => {
     }
 };
 
+
 // @desc    Delete local news
 // @route   DELETE /api/localnews/:id
 // @access  Public

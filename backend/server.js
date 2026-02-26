@@ -9,6 +9,7 @@ const trainRoutes = require('./routes/TrainRoute');
 const newsRoutes = require('./routes/NewsRoute'); 
 const localNewsRoutes = require('./routes/LocalNewsRoute'); 
 const lostRoutes = require('./routes/LostRoute');
+const telemetryRoutes = require('./routes/TelemetryRoute');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/api/trains', trainRoutes);
 app.use('/api/news', newsRoutes); 
 app.use('/api/localnews', localNewsRoutes); 
 app.use('/api/lost', lostRoutes);
+app.use('/api/telemetry', telemetryRoutes);
 
 // Error Handler
 app.use((err, req, res, next) => {

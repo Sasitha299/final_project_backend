@@ -25,7 +25,7 @@ export default function TrainPage() {
     destination: ""
   });
 
-  const API = "http://localhost:5000/api/trains";
+  const API = "https://final-project-backend-psi.vercel.app/api/trains";
 
   const fetchTrains = async () => {
     try {

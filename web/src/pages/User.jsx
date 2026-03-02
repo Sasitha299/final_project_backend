@@ -26,8 +26,8 @@ export default function UserPage() {
 
   // --- UPDATED API ENDPOINTS ---
   // Since we merged everything into authRoutes mounted at /api/auth
-  const API_USERS = "http://localhost:5000/api/auth/users"; 
-  const API_REGISTER = "http://localhost:5000/api/auth/register";
+  const API_USERS = "https://final-project-backend-psi.vercel.app/api/auth/users"; 
+  const API_REGISTER = "https://final-project-backend-psi.vercel.app/api/auth/register";
 
   // ================= FETCH USERS =================
   const fetchUsers = async () => {

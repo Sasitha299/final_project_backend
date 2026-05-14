@@ -42,6 +42,7 @@ export default function TrainPage() {
     } catch (err) {
       console.error(err);
       setLoading(false);
+      showToast("❌ Failed to load trains");
     }
   };
 
@@ -102,6 +103,11 @@ export default function TrainPage() {
     setShowForm(true);
   };
 
+  const showToast = (msg) => {
+    setSuccessMsg(msg);
+    setTimeout(() => setSuccessMsg(""), 3000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -114,7 +120,11 @@ export default function TrainPage() {
       }
       setShowForm(false);
       fetchTrains();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Something went wrong!";
+      showToast(`❌ ${errorMessage}`);
+      console.error(err);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -128,16 +138,26 @@ export default function TrainPage() {
         showToast("🗑️ Schedule removed");
         setTrains(prev => prev.filter(t => t._id !== id));
         setDeletingId(null);
-      } catch (err) { 
+      } catch (err) {
+        const errorMessage = err.response?.data?.message || "Failed to delete train!";
+        showToast(`❌ ${errorMessage}`);
         console.error(err);
         setDeletingId(null);
       }
     }, 500);
   };
 
-  const showToast = (msg) => {
-    setSuccessMsg(msg);
-    setTimeout(() => setSuccessMsg(""), 3000);
+  const formatDateTime = (dateTimeStr) => {
+    if (!dateTimeStr) return '—';
+    const date = new Date(dateTimeStr);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
   };
 
   const filteredTrains = trains.filter((t) => {
@@ -305,23 +325,23 @@ export default function TrainPage() {
                     <div className="space-y-1">
                       <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Origin Departure Time</label>
                       <input
+                        type="datetime-local"
                         name="originDepartureTime"
                         required
                         value={formData.originDepartureTime}
                         onChange={handleChange}
                         className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                        placeholder="e.g. 03:15 AM"
                       />
                     </div>
                     <div className="space-y-1">
                       <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Destination Arrival Time</label>
                       <input
+                        type="datetime-local"
                         name="destinationArrivalTime"
                         required
                         value={formData.destinationArrivalTime}
                         onChange={handleChange}
                         className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                        placeholder="e.g. 05:06 AM"
                       />
                     </div>
                   </div>
@@ -389,7 +409,7 @@ export default function TrainPage() {
                   <div className="pt-4 flex flex-col md:flex-row gap-3">
                     <button type="button" onClick={() => setShowForm(false)} className="w-full md:flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors font-medium">Cancel</button>
                     <button type="submit" className="w-full md:flex-1 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-all shadow-lg shadow-indigo-500/20">
-                      {editMode ? "Save Changes" : "Create Schedule"}
+                      {editMode ? "Save Changes" : "Create Train"}
                     </button>
                   </div>
                 </form>
@@ -443,7 +463,7 @@ export default function TrainPage() {
                           <div className="flex flex-col items-center gap-2">
                             <div className="text-slate-300">{t.fromStation} → {t.toStation}</div>
                             <div className="flex items-center gap-1.5 text-emerald-400 font-medium bg-emerald-500/10 px-2 py-1 rounded">
-                              <Clock size={14} /> {t.originDepartureTime} - {t.destinationArrivalTime}
+                              <Clock size={14} /> {formatDateTime(t.originDepartureTime)} - {formatDateTime(t.destinationArrivalTime)}
                             </div>
                           </div>
                         </td>

@@ -9,7 +9,6 @@ const trainSchema = new mongoose.Schema({
     },
     trainName: {
         type: String,
-        required: [true, 'Please add a Train Name'],
         trim: true
     },
     line: {
@@ -17,55 +16,46 @@ const trainSchema = new mongoose.Schema({
         required: [true, 'Please add a Line'],
         trim: true
     },
-    station: {
+    fromStation: {
         type: String,
-        required: [true, 'Please add a Station'],
+        required: [true, 'Please add a From Station'],
         trim: true
     },
-    stopStatus: {
+    toStation: {
         type: String,
-        enum: ['Stop', 'Pass Only'],
-        default: 'Stop'
-    },
-    timeAtStation: {
-        type: String,
+        required: [true, 'Please add a To Station'],
         trim: true
     },
-    arrivalTime: {
+    originDepartureTime: {
         type: String,
-        trim: true
+        required: [true, 'Please add a Origin Departure Time']
     },
-    departureTime: {
+    destinationArrivalTime: {
         type: String,
-        required: [true, 'Please add a Departure Time']
-    },
-    direction: {
-        type: String,
-        enum: ['UP', 'DOWN'],
-        default: 'UP'
-    },
-    runningDays: {
-        type: [String],
-        default: []
+        required: [true, 'Please add a Destination Arrival Time']
     },
     trainType: {
         type: String,
         enum: ['Slow', 'Express', 'Intercity', 'Night Mail'],
         default: 'Slow'
     },
+    expectedSeries: {
+        type: String,
+        enum: ['M', 'S', 'Unknown'],
+        default: 'Unknown'
+    },
+    expectedClass: {
+        type: String,
+        enum: ['M8', 'M10', 'S11', 'S13', 'Unknown'],
+        default: 'Unknown'
+    },
     activeStatus: {
         type: String,
         enum: ['Active', 'Inactive'],
         default: 'Active'
     },
-    departure: {
+    remarks: {
         type: String,
-        required: [true, 'Please add a Departure Station'],
-        trim: true
-    },
-    destination: {
-        type: String,
-        required: [true, 'Please add a Destination Station'],
         trim: true
     }
 }, {

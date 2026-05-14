@@ -21,17 +21,15 @@ export default function TrainPage() {
     trainNumber: "",
     trainName: "",
     line: "Coastal Line",
-    station: "",
-    stopStatus: "Stop",
-    timeAtStation: "",
-    arrivalTime: "",
-    departureTime: "",
-    direction: "UP",
-    runningDays: [],
+    fromStation: "",
+    toStation: "",
+    originDepartureTime: "",
+    destinationArrivalTime: "",
     trainType: "Slow",
+    expectedSeries: "Unknown",
+    expectedClass: "Unknown",
     activeStatus: "Active",
-    departure: "",
-    destination: ""
+    remarks: ""
   });
 
   const API = "https://final-project-backend-psi.vercel.app/api/trains";
@@ -70,17 +68,15 @@ export default function TrainPage() {
       trainNumber: "",
       trainName: "",
       line: "Coastal Line",
-      station: "",
-      stopStatus: "Stop",
-      timeAtStation: "",
-      arrivalTime: "",
-      departureTime: "",
-      direction: "UP",
-      runningDays: [],
+      fromStation: "",
+      toStation: "",
+      originDepartureTime: "",
+      destinationArrivalTime: "",
       trainType: "Slow",
+      expectedSeries: "Unknown",
+      expectedClass: "Unknown",
       activeStatus: "Active",
-      departure: "",
-      destination: ""
+      remarks: ""
     });
     setShowForm(true);
   };
@@ -92,17 +88,15 @@ export default function TrainPage() {
       trainNumber: train.trainNumber || "",
       trainName: train.trainName || "",
       line: train.line || "Coastal Line",
-      station: train.station || "",
-      stopStatus: train.stopStatus || "Stop",
-      timeAtStation: train.timeAtStation || "",
-      arrivalTime: train.arrivalTime || "",
-      departureTime: train.departureTime || "",
-      direction: train.direction || "UP",
-      runningDays: train.runningDays || [],
+      fromStation: train.fromStation || "",
+      toStation: train.toStation || "",
+      originDepartureTime: train.originDepartureTime || "",
+      destinationArrivalTime: train.destinationArrivalTime || "",
       trainType: train.trainType || "Slow",
+      expectedSeries: train.expectedSeries || "Unknown",
+      expectedClass: train.expectedClass || "Unknown",
       activeStatus: train.activeStatus || "Active",
-      departure: train.departure || "",
-      destination: train.destination || "",
+      remarks: train.remarks || "",
       _id: train._id
     });
     setShowForm(true);
@@ -152,9 +146,9 @@ export default function TrainPage() {
       t.trainName?.toLowerCase().includes(query) ||
       t.trainNumber?.includes(query) ||
       t.line?.toLowerCase().includes(query) ||
-      t.station?.toLowerCase().includes(query) ||
-      t.departure?.toLowerCase().includes(query) ||
-      t.destination?.toLowerCase().includes(query)
+      t.fromStation?.toLowerCase().includes(query) ||
+      t.toStation?.toLowerCase().includes(query) ||
+      t.trainType?.toLowerCase().includes(query)
     );
   });
 
@@ -183,7 +177,7 @@ export default function TrainPage() {
               onClick={handleAddClick}
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium transition-all active:scale-95 shadow-lg shadow-indigo-500/20"
             >
-              <Plus size={18} /> Add New Timetable
+              <Plus size={18} /> Add New Train
             </button>
           </div>
         </nav>
@@ -214,8 +208,8 @@ export default function TrainPage() {
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div>
-                    <h2 className="text-xl font-bold text-white">{editMode ? "Update Timetable" : "Add New Timetable"}</h2>
-                    <p className="text-sm text-slate-400 mt-1">Enter schedule details directly in the inline timetable form.</p>
+                    <h2 className="text-xl font-bold text-white">{editMode ? "Update Train" : "Add New Train"}</h2>
+                    <p className="text-sm text-slate-400 mt-1">Enter schedule details directly in the inline train form.</p>
                   </div>
                   <button
                     type="button"
@@ -235,9 +229,22 @@ export default function TrainPage() {
                         value={formData.trainNumber}
                         onChange={handleChange}
                         className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                        placeholder="e.g. 1012"
+                        placeholder="e.g. 8302"
                       />
                     </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Train Name</label>
+                      <input
+                        name="trainName"
+                        value={formData.trainName}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                        placeholder="e.g. Galu Kumari"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Line</label>
                       <select
@@ -250,49 +257,6 @@ export default function TrainPage() {
                         <option>Coastal Line</option>
                         <option>Main Line</option>
                         <option>Northern Line</option>
-                        <option>Eastern Line</option>
-                        <option>Southern Line</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Train Name</label>
-                      <input
-                        name="trainName"
-                        required
-                        value={formData.trainName}
-                        onChange={handleChange}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                        placeholder="e.g. Udarata Menike"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Station / Monitoring Location</label>
-                      <input
-                        name="station"
-                        required
-                        value={formData.station}
-                        onChange={handleChange}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                        placeholder="e.g. Galle"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Stop Status</label>
-                      <select
-                        name="stopStatus"
-                        required
-                        value={formData.stopStatus}
-                        onChange={handleChange}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                      >
-                        <option>Stop</option>
-                        <option>Pass Only</option>
                       </select>
                     </div>
                     <div className="space-y-1">
@@ -312,54 +276,85 @@ export default function TrainPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Time at Station</label>
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">From Station</label>
                       <input
-                        name="timeAtStation"
+                        name="fromStation"
                         required
-                        value={formData.timeAtStation}
+                        value={formData.fromStation}
                         onChange={handleChange}
                         className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                        placeholder="04:59 AM"
+                        placeholder="e.g. Aluthgama"
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Arrival Time</label>
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">To Station</label>
                       <input
-                        name="arrivalTime"
+                        name="toStation"
                         required
-                        value={formData.arrivalTime}
+                        value={formData.toStation}
                         onChange={handleChange}
                         className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                        placeholder="04:59 AM"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Departure Time</label>
-                      <input
-                        name="departureTime"
-                        required
-                        value={formData.departureTime}
-                        onChange={handleChange}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                        placeholder="05:00 AM"
+                        placeholder="e.g. Colombo Fort"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Direction</label>
-                      <select
-                        name="direction"
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Origin Departure Time</label>
+                      <input
+                        name="originDepartureTime"
                         required
-                        value={formData.direction}
+                        value={formData.originDepartureTime}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                        placeholder="e.g. 03:15 AM"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Destination Arrival Time</label>
+                      <input
+                        name="destinationArrivalTime"
+                        required
+                        value={formData.destinationArrivalTime}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                        placeholder="e.g. 05:06 AM"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Expected Series</label>
+                      <select
+                        name="expectedSeries"
+                        required
+                        value={formData.expectedSeries}
                         onChange={handleChange}
                         className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                       >
-                        <option>UP</option>
-                        <option>DOWN</option>
+                        <option>M</option>
+                        <option>S</option>
+                        <option>Unknown</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Expected Class</label>
+                      <select
+                        name="expectedClass"
+                        required
+                        value={formData.expectedClass}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                      >
+                        <option>M8</option>
+                        <option>M10</option>
+                        <option>S11</option>
+                        <option>S13</option>
+                        <option>Unknown</option>
                       </select>
                     </div>
                     <div className="space-y-1">
@@ -377,52 +372,19 @@ export default function TrainPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2 rounded-2xl border border-slate-700 bg-slate-950/40 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Running Days</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
-                        <button
-                          type="button"
-                          key={day}
-                          onClick={() => handleToggleDay(day)}
-                          className={`rounded-2xl px-3 py-2 text-sm font-medium transition-all ${formData.runningDays.includes(day) ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
-                        >
-                          {day}
-                        </button>
-                      ))}
-                    </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Remarks</label>
+                    <textarea
+                      name="remarks"
+                      value={formData.remarks}
+                      onChange={handleChange}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500 resize-none"
+                      placeholder="Optional notes"
+                      rows="3"
+                    />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">From</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={18} />
-                        <input
-                          name="departure"
-                          required
-                          value={formData.departure}
-                          onChange={handleChange}
-                          className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                          placeholder="Colombo Fort"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">To</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={18} />
-                        <input
-                          name="destination"
-                          required
-                          value={formData.destination}
-                          onChange={handleChange}
-                          className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                          placeholder="Badulla"
-                        />
-                      </div>
-                    </div>
-                  </div>
+
 
                   <div className="pt-4 flex flex-col md:flex-row gap-3">
                     <button type="button" onClick={() => setShowForm(false)} className="w-full md:flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors font-medium">Cancel</button>
@@ -447,8 +409,8 @@ export default function TrainPage() {
                   <thead>
                     <tr className="bg-slate-800/50 text-slate-400 text-xs uppercase tracking-wider">
                       <th className="px-6 py-4 font-semibold">Train Details</th>
-                      <th className="px-6 py-4 font-semibold text-center">Departure</th>
-                      <th className="px-6 py-4 font-semibold text-center">Route</th>
+                      <th className="px-6 py-4 font-semibold text-center">Route & Times</th>
+                      <th className="px-6 py-4 font-semibold text-center">Type & Status</th>
                       <th className="px-6 py-4 font-semibold text-right">Actions</th>
                     </tr>
                   </thead>
@@ -468,35 +430,27 @@ export default function TrainPage() {
                               <Hash size={20} />
                             </div>
                             <div>
-                              <div className="text-white font-bold">{t.trainName}</div>
+                              <div className="text-white font-bold">{t.trainName || '—'}</div>
                               <div className="text-xs text-slate-500 font-mono uppercase">{t.trainNumber}</div>
                               <div className="mt-2 flex flex-wrap gap-2 text-[11px] uppercase">
                                 <span className="px-2 py-1 rounded-full bg-slate-800 text-slate-300">{t.line}</span>
-                                <span className="px-2 py-1 rounded-full bg-slate-800 text-slate-300">{t.station}</span>
+                                <span className="px-2 py-1 rounded-full bg-slate-800 text-slate-300">{t.expectedSeries}/{t.expectedClass}</span>
                               </div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-5">
                           <div className="flex flex-col items-center gap-2">
+                            <div className="text-slate-300">{t.fromStation} → {t.toStation}</div>
                             <div className="flex items-center gap-1.5 text-emerald-400 font-medium bg-emerald-500/10 px-2 py-1 rounded">
-                              <Clock size={14} /> {t.departureTime}
-                            </div>
-                            <div className="text-xs text-slate-500">
-                              Arrival: <span className="text-slate-200">{t.arrivalTime || '—'}</span>
-                            </div>
-                            <div className="text-xs text-slate-500">
-                              Stop: <span className="text-slate-200">{t.stopStatus}</span>
+                              <Clock size={14} /> {t.originDepartureTime} - {t.destinationArrivalTime}
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-5">
                           <div className="flex flex-col items-center gap-3 text-sm">
-                            <div className="text-slate-300">{t.departure} →</div>
-                            <div className="text-indigo-400 font-medium">{t.destination}</div>
+                            <div className="text-slate-300">{t.trainType}</div>
                             <div className="mt-2 flex flex-wrap justify-center gap-2 text-[11px] uppercase">
-                              <span className="px-2 py-1 rounded-full bg-slate-800 text-slate-300">{t.direction}</span>
-                              <span className="px-2 py-1 rounded-full bg-slate-800 text-slate-300">{t.trainType}</span>
                               <span className={`px-2 py-1 rounded-full ${t.activeStatus === 'Active' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
                                 {t.activeStatus}
                               </span>

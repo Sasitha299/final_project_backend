@@ -18,7 +18,7 @@ const timetableSchema = new mongoose.Schema({
     },
     stopStatus: {
         type: String,
-        enum: ['Stop', 'Pass Only'],
+        enum: ['Stop', 'Pass Only', 'No Stop'],
         default: 'Stop'
     },
     timeAtStation: {

@@ -7,6 +7,7 @@ import User from './pages/User.jsx';
 import LocalNews from './pages/LocalNews.jsx';
 import TrainNews from './pages/TrainNews.jsx';
 import Lost from './pages/Lost.jsx';
+import Timetable from './pages/Timetable.jsx';
 
 
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/lost" element={<Lost />} />
           <Route path="/localnews" element={<LocalNews />} />
           <Route path="/trainnews" element={<TrainNews />} />
+          <Route path="/timetable" element={<Timetable />} />
 
         </Routes>
       </div>

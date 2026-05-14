@@ -20,7 +20,16 @@ export default function TrainPage() {
   const [formData, setFormData] = useState({
     trainNumber: "",
     trainName: "",
+    line: "Coastal Line",
+    station: "",
+    stopStatus: "Stop",
+    timeAtStation: "",
+    arrivalTime: "",
     departureTime: "",
+    direction: "UP",
+    runningDays: [],
+    trainType: "Slow",
+    activeStatus: "Active",
     departure: "",
     destination: ""
   });
@@ -40,19 +49,62 @@ export default function TrainPage() {
 
   useEffect(() => { fetchTrains(); }, []);
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleToggleDay = (day) => {
+    setFormData((prev) => {
+      const runningDays = prev.runningDays.includes(day)
+        ? prev.runningDays.filter((d) => d !== day)
+        : [...prev.runningDays, day];
+      return { ...prev, runningDays };
+    });
+  };
 
   // Open Form for Adding
   const handleAddClick = () => {
     setEditMode(false);
-    setFormData({ trainNumber: "", trainName: "", departureTime: "", departure: "", destination: "" });
+    setFormData({
+      trainNumber: "",
+      trainName: "",
+      line: "Coastal Line",
+      station: "",
+      stopStatus: "Stop",
+      timeAtStation: "",
+      arrivalTime: "",
+      departureTime: "",
+      direction: "UP",
+      runningDays: [],
+      trainType: "Slow",
+      activeStatus: "Active",
+      departure: "",
+      destination: ""
+    });
     setShowForm(true);
   };
 
   // Open Form for Editing
   const handleEditClick = (train) => {
     setEditMode(true);
-    setFormData(train); 
+    setFormData({
+      trainNumber: train.trainNumber || "",
+      trainName: train.trainName || "",
+      line: train.line || "Coastal Line",
+      station: train.station || "",
+      stopStatus: train.stopStatus || "Stop",
+      timeAtStation: train.timeAtStation || "",
+      arrivalTime: train.arrivalTime || "",
+      departureTime: train.departureTime || "",
+      direction: train.direction || "UP",
+      runningDays: train.runningDays || [],
+      trainType: train.trainType || "Slow",
+      activeStatus: train.activeStatus || "Active",
+      departure: train.departure || "",
+      destination: train.destination || "",
+      _id: train._id
+    });
     setShowForm(true);
   };
 
@@ -94,10 +146,17 @@ export default function TrainPage() {
     setTimeout(() => setSuccessMsg(""), 3000);
   };
 
-  const filteredTrains = trains.filter(t => 
-    t.trainName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.trainNumber.includes(searchTerm)
-  );
+  const filteredTrains = trains.filter((t) => {
+    const query = searchTerm.toLowerCase();
+    return (
+      t.trainName?.toLowerCase().includes(query) ||
+      t.trainNumber?.includes(query) ||
+      t.line?.toLowerCase().includes(query) ||
+      t.station?.toLowerCase().includes(query) ||
+      t.departure?.toLowerCase().includes(query) ||
+      t.destination?.toLowerCase().includes(query)
+    );
+  });
 
   return (
     // MAIN LAYOUT CONTAINER
@@ -124,7 +183,7 @@ export default function TrainPage() {
               onClick={handleAddClick}
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium transition-all active:scale-95 shadow-lg shadow-indigo-500/20"
             >
-              <Plus size={18} /> Add New Train
+              <Plus size={18} /> Add New Timetable
             </button>
           </div>
         </nav>
@@ -150,10 +209,235 @@ export default function TrainPage() {
             </div>
           </div>
 
+          {showForm && (
+            <section className="mb-8 bg-slate-900/70 border border-slate-800 rounded-3xl p-6 shadow-xl">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-white">{editMode ? "Update Timetable" : "Add New Timetable"}</h2>
+                    <p className="text-sm text-slate-400 mt-1">Enter schedule details directly in the inline timetable form.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowForm(false)}
+                    className="self-start md:self-auto rounded-xl bg-slate-800 px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+                <form onSubmit={handleSubmit} className="grid gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Train Number</label>
+                      <input
+                        name="trainNumber"
+                        required
+                        value={formData.trainNumber}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                        placeholder="e.g. 1012"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Line</label>
+                      <select
+                        name="line"
+                        required
+                        value={formData.line}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                      >
+                        <option>Coastal Line</option>
+                        <option>Main Line</option>
+                        <option>Northern Line</option>
+                        <option>Eastern Line</option>
+                        <option>Southern Line</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Train Name</label>
+                      <input
+                        name="trainName"
+                        required
+                        value={formData.trainName}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                        placeholder="e.g. Udarata Menike"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Station / Monitoring Location</label>
+                      <input
+                        name="station"
+                        required
+                        value={formData.station}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                        placeholder="e.g. Galle"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Stop Status</label>
+                      <select
+                        name="stopStatus"
+                        required
+                        value={formData.stopStatus}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                      >
+                        <option>Stop</option>
+                        <option>Pass Only</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Train Type</label>
+                      <select
+                        name="trainType"
+                        required
+                        value={formData.trainType}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                      >
+                        <option>Slow</option>
+                        <option>Express</option>
+                        <option>Intercity</option>
+                        <option>Night Mail</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Time at Station</label>
+                      <input
+                        name="timeAtStation"
+                        required
+                        value={formData.timeAtStation}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                        placeholder="04:59 AM"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Arrival Time</label>
+                      <input
+                        name="arrivalTime"
+                        required
+                        value={formData.arrivalTime}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                        placeholder="04:59 AM"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Departure Time</label>
+                      <input
+                        name="departureTime"
+                        required
+                        value={formData.departureTime}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                        placeholder="05:00 AM"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Direction</label>
+                      <select
+                        name="direction"
+                        required
+                        value={formData.direction}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                      >
+                        <option>UP</option>
+                        <option>DOWN</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Active Status</label>
+                      <select
+                        name="activeStatus"
+                        required
+                        value={formData.activeStatus}
+                        onChange={handleChange}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                      >
+                        <option>Active</option>
+                        <option>Inactive</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 rounded-2xl border border-slate-700 bg-slate-950/40 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Running Days</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
+                        <button
+                          type="button"
+                          key={day}
+                          onClick={() => handleToggleDay(day)}
+                          className={`rounded-2xl px-3 py-2 text-sm font-medium transition-all ${formData.runningDays.includes(day) ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
+                        >
+                          {day}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">From</label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={18} />
+                        <input
+                          name="departure"
+                          required
+                          value={formData.departure}
+                          onChange={handleChange}
+                          className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                          placeholder="Colombo Fort"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-500 uppercase ml-1">To</label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={18} />
+                        <input
+                          name="destination"
+                          required
+                          value={formData.destination}
+                          onChange={handleChange}
+                          className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
+                          placeholder="Badulla"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex flex-col md:flex-row gap-3">
+                    <button type="button" onClick={() => setShowForm(false)} className="w-full md:flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors font-medium">Cancel</button>
+                    <button type="submit" className="w-full md:flex-1 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-all shadow-lg shadow-indigo-500/20">
+                      {editMode ? "Save Changes" : "Create Schedule"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </section>
+          )}
+
           {/* Table Container */}
           <div className="bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden backdrop-blur-sm shadow-xl">
-            {loading ? (
-              <div className="py-20 flex flex-col items-center gap-4">
+            {loading ? (              <div className="py-20 flex flex-col items-center gap-4">
                 <Loader2 className="animate-spin text-indigo-500" size={40} />
                 <p className="text-slate-400">Loading fleet data...</p>
               </div>
@@ -186,21 +470,37 @@ export default function TrainPage() {
                             <div>
                               <div className="text-white font-bold">{t.trainName}</div>
                               <div className="text-xs text-slate-500 font-mono uppercase">{t.trainNumber}</div>
+                              <div className="mt-2 flex flex-wrap gap-2 text-[11px] uppercase">
+                                <span className="px-2 py-1 rounded-full bg-slate-800 text-slate-300">{t.line}</span>
+                                <span className="px-2 py-1 rounded-full bg-slate-800 text-slate-300">{t.station}</span>
+                              </div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <div className="flex flex-col items-center">
+                          <div className="flex flex-col items-center gap-2">
                             <div className="flex items-center gap-1.5 text-emerald-400 font-medium bg-emerald-500/10 px-2 py-1 rounded">
                               <Clock size={14} /> {t.departureTime}
                             </div>
+                            <div className="text-xs text-slate-500">
+                              Arrival: <span className="text-slate-200">{t.arrivalTime || '—'}</span>
+                            </div>
+                            <div className="text-xs text-slate-500">
+                              Stop: <span className="text-slate-200">{t.stopStatus}</span>
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <div className="flex items-center justify-center gap-3 text-sm">
-                            <span className="text-slate-300">{t.departure}</span>
-                            <div className="h-[1px] w-8 bg-slate-700"></div>
-                            <span className="text-indigo-400 font-medium">{t.destination}</span>
+                          <div className="flex flex-col items-center gap-3 text-sm">
+                            <div className="text-slate-300">{t.departure} →</div>
+                            <div className="text-indigo-400 font-medium">{t.destination}</div>
+                            <div className="mt-2 flex flex-wrap justify-center gap-2 text-[11px] uppercase">
+                              <span className="px-2 py-1 rounded-full bg-slate-800 text-slate-300">{t.direction}</span>
+                              <span className="px-2 py-1 rounded-full bg-slate-800 text-slate-300">{t.trainType}</span>
+                              <span className={`px-2 py-1 rounded-full ${t.activeStatus === 'Active' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
+                                {t.activeStatus}
+                              </span>
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-5 text-right">
@@ -242,98 +542,7 @@ export default function TrainPage() {
           </div>
         )}
       </div>
-
-      {/* Modern Modal Overlay */}
-      {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setShowForm(false)}></div>
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl shadow-2xl relative z-10 overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-800/30">
-              <h2 className="text-xl font-bold text-white">{editMode ? "Update Schedule" : "Add New Fleet"}</h2>
-              <button onClick={() => setShowForm(false)} className="text-slate-400 hover:text-white transition-colors">
-                <X size={24} />
-              </button>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Train Number</label>
-                  <input 
-                    name="trainNumber" 
-                    required 
-                    value={formData.trainNumber} 
-                    onChange={handleChange} 
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500" 
-                    placeholder="e.g. 1012" 
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Departure Time</label>
-                  <input 
-                    name="departureTime" 
-                    required 
-                    value={formData.departureTime} 
-                    onChange={handleChange} 
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500" 
-                    placeholder="e.g. 05:55 AM" 
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-500 uppercase ml-1">Train Name</label>
-                <input 
-                  name="trainName" 
-                  required 
-                  value={formData.trainName} 
-                  onChange={handleChange} 
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500" 
-                  placeholder="e.g. Udarata Menike" 
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase ml-1">From</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={18} />
-                    <input 
-                      name="departure" 
-                      required 
-                      value={formData.departure} 
-                      onChange={handleChange} 
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500" 
-                      placeholder="Colombo Fort" 
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase ml-1">To</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={18} />
-                    <input 
-                      name="destination" 
-                      required 
-                      value={formData.destination} 
-                      onChange={handleChange} 
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500" 
-                      placeholder="Badulla" 
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 flex gap-3">
-                <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors font-medium">Cancel</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-all shadow-lg shadow-indigo-500/20">
-                  {editMode ? "Save Changes" : "Create Schedule"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+

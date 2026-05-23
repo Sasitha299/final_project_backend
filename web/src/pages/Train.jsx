@@ -229,7 +229,7 @@ export default function TrainPage() {
                         value={formData.trainNumber}
                         onChange={handleChange}
                         className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder-slate-500"
-                        placeholder="e.g. 8302"
+                         placeholder="e.g. 8302"
                       />
                     </div>
                     <div className="space-y-1">

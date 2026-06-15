@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api.js";
 import { 
   Plus, Edit2, Trash2, User, Mail, 
   Lock, X, Loader2, Search, ShieldCheck 
@@ -24,20 +24,16 @@ export default function UserPage() {
     confirmPassword: ""
   });
 
-  // --- UPDATED API ENDPOINTS ---
-  // Since we merged everything into authRoutes mounted at /api/auth
-  const API_USERS = "https://final-project-backend-psi.vercel.app/api/auth/users"; 
-  const API_REGISTER = "https://final-project-backend-psi.vercel.app/api/auth/register";
-
   // ================= FETCH USERS =================
   const fetchUsers = async () => {
     try {
-      const res = await axios.get(API_USERS);
+      const res = await API.get('/auth/users');
       setUsers(res.data.data || []);
       setLoading(false);
     } catch (err) {
       console.error("Error fetching users:", err);
       setLoading(false);
+      showToast("❌ Failed to load users");
     }
   };
 
@@ -75,22 +71,23 @@ export default function UserPage() {
     try {
       if (editMode) {
         // Update User
-        await axios.put(`${API_USERS}/${formData._id}`, {
+        await API.put(`/auth/users/${formData._id}`, {
           fullName: formData.fullName,
           email: formData.email
         });
         showToast("✅ User details updated successfully");
       } else {
         // Add User
-        await axios.post(API_REGISTER, formData);
+        await API.post('/auth/register', formData);
         showToast("🚀 New user registered successfully");
       }
       
       setShowForm(false);
       fetchUsers(); 
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Operation failed");
+      const errorMessage = err.response?.data?.message || "Operation failed";
+      showToast(`❌ ${errorMessage}`);
+      console.error('Error submitting form:', err);
     }
   };
 
@@ -101,14 +98,15 @@ export default function UserPage() {
 
     setTimeout(async () => {
       try {
-        await axios.delete(`${API_USERS}/${id}`);
+        await API.delete(`/auth/users/${id}`);
         showToast("🗑️ User deleted successfully");
         setUsers(prev => prev.filter(u => u._id !== id));
         setDeletingId(null);
       } catch (err) {
-        console.error(err);
+        const errorMessage = err.response?.data?.message || "Failed to delete user";
+        showToast(`❌ ${errorMessage}`);
+        console.error('Error deleting user:', err);
         setDeletingId(null);
-        alert("Failed to delete user");
       }
     }, 500);
   };

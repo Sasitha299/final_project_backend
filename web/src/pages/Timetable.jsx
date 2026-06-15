@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api.js";
 import {
   Plus, Edit2, Trash2, Train, MapPin,
   Clock, Hash, X, Loader2, Search
@@ -32,16 +32,13 @@ export default function TimetablePage() {
     activeStatus: "Active"
   });
 
-  const API = "https://final-project-backend-psi.vercel.app/api/timetables";
-  const TRAINS_API = "https://final-project-backend-psi.vercel.app/api/trains";
-
   const fetchTimetables = async () => {
     try {
-      const res = await axios.get(API);
+      const res = await API.get('/timetables');
       setTimetables(res.data.data || []);
       setLoading(false);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching timetables:', err);
       setLoading(false);
       showToast("❌ Failed to load timetables");
     }
@@ -49,10 +46,11 @@ export default function TimetablePage() {
 
   const fetchTrains = async () => {
     try {
-      const res = await axios.get(TRAINS_API);
+      const res = await API.get('/trains');
       setTrains(res.data.data || []);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching trains:', err);
+      showToast("⚠️ Failed to load trains");
     }
   };
 
@@ -84,10 +82,10 @@ export default function TimetablePage() {
     e.preventDefault();
     try {
       if (editMode) {
-        await axios.put(`${API}/${formData._id}`, formData);
+        await API.put(`/timetables/${formData._id}`, formData);
         showToast("✅ Timetable updated successfully");
       } else {
-        await axios.post(API, formData);
+        await API.post('/timetables', formData);
         showToast("🚀 New timetable added");
       }
       setShowForm(false);
@@ -95,7 +93,7 @@ export default function TimetablePage() {
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Something went wrong!";
       showToast(`❌ ${errorMessage}`);
-      console.error(err);
+      console.error('Error submitting form:', err);
     }
   };
 
@@ -145,14 +143,14 @@ export default function TimetablePage() {
 
     setTimeout(async () => {
       try {
-        await axios.delete(`${API}/${id}`);
+        await API.delete(`/timetables/${id}`);
         showToast("🗑️ Timetable removed");
         setTimetables(prev => prev.filter(t => t._id !== id));
         setDeletingId(null);
       } catch (err) {
         const errorMessage = err.response?.data?.message || "Failed to delete timetable!";
         showToast(`❌ ${errorMessage}`);
-        console.error(err);
+        console.error('Error deleting timetable:', err);
         setDeletingId(null);
       }
     }, 500);

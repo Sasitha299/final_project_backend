@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import API from '../services/api.js';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -18,29 +19,17 @@ const Login = () => {
     setError('');
 
     try {
-      // update the URL port if your backend runs on a different port (e.g., 5000)
-      const response = await fetch('https://final-project-backend-psi.vercel.app/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
+      const response = await API.post('/auth/login', formData);
 
       // Save token to local storage
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user', JSON.stringify(data.data.user));
+      localStorage.setItem('token', response.data.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
 
       // Redirect to home page
       navigate('/user'); 
     } catch (err) {
-      setError(err.message);
+      const errorMessage = err.response?.data?.message || err.message || 'Login failed';
+      setError(errorMessage);
     }
   };
 

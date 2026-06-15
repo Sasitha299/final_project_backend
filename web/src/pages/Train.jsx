@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api.js";
 import { 
   Plus, Edit2, Trash2, Train, MapPin, 
   Clock, Hash, X, Loader2, Search 
@@ -32,16 +32,15 @@ export default function TrainPage() {
     remarks: ""
   });
 
-  const API = "https://final-project-backend-psi.vercel.app/api/trains";
-
   const fetchTrains = async () => {
     try {
-      const res = await axios.get(API);
+      const res = await API.get('/trains');
       setTrains(res.data.data || []);
       setLoading(false);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching trains:', err);
       setLoading(false);
+      showToast("❌ Failed to load trains");
     }
   };
 
@@ -106,15 +105,19 @@ export default function TrainPage() {
     e.preventDefault();
     try {
       if (editMode) {
-        await axios.put(`${API}/${formData._id}`, formData);
+        await API.put(`/trains/${formData._id}`, formData);
         showToast("✅ Train updated successfully");
       } else {
-        await axios.post(API, formData);
+        await API.post('/trains', formData);
         showToast("🚀 New train added to fleet");
       }
       setShowForm(false);
       fetchTrains();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Something went wrong!";
+      showToast(`❌ ${errorMessage}`);
+      console.error('Error submitting form:', err);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -124,12 +127,14 @@ export default function TrainPage() {
 
     setTimeout(async () => {
       try {
-        await axios.delete(`${API}/${id}`);
+        await API.delete(`/trains/${id}`);
         showToast("🗑️ Schedule removed");
         setTrains(prev => prev.filter(t => t._id !== id));
         setDeletingId(null);
-      } catch (err) { 
-        console.error(err);
+      } catch (err) {
+        const errorMessage = err.response?.data?.message || "Failed to delete schedule!";
+        showToast(`❌ ${errorMessage}`);
+        console.error('Error deleting train:', err);
         setDeletingId(null);
       }
     }, 500);

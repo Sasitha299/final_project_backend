@@ -1,6 +1,7 @@
 const TrainDetection = require('../models/TrainDetectionModel');
 const Train          = require('../models/TrainModel');
 const Timetable      = require('../models/TimetableModel');
+const { saveFilterUnits } = require('../utils/filterUnits');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -200,6 +201,8 @@ exports.createDetection = async (req, res) => {
             notes                       : noteStr || 'Locoid detection'
         });
 
+        await saveFilterUnits([detection]);
+
         res.status(201).json({ success: true, data: detection });
 
     } catch (error) {
@@ -211,6 +214,7 @@ exports.createDetection = async (req, res) => {
 exports.createMultipleDetections = async (req, res) => {
     try {
         const detections = await TrainDetection.insertMany(req.body);
+        await saveFilterUnits(detections);
         res.status(201).json({
             success: true,
             count: detections.length,

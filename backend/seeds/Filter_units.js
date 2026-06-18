@@ -45,61 +45,69 @@ const filterAndUpdateRecords = async (isInitial = false) => {
             return;
         }
 
-        // Filter matching records
-        const matchingRecords = detections.filter(detection => 
-            validTrainNumbers.has(detection.trainNumber)
-        );
+        // Update last processed ID even if there are no matching records,
+        // so we don't reprocess the same records repeatedly.
+        lastProcessedId = detections[detections.length - 1]._id;
 
-        if (matchingRecords.length > 0) {
-            console.log(`[${new Date().toLocaleTimeString()}] Found ${matchingRecords.length} new matching records`);
-            
-            // Update last processed ID
-            lastProcessedId = detections[detections.length - 1]._id;
-
-            // Fetch all detection records for statistics
-            const allDetections = await TrainDetection.find({}).lean();
-            const allMatchingRecords = allDetections.filter(detection => 
-                validTrainNumbers.has(detection.trainNumber)
-            );
-
-            // Create summary statistics
-            const statistics = {
-                totalDetectionRecords: allDetections.length,
-                totalValidTrains: validTrainNumbers.size,
-                matchingRecords: allMatchingRecords.length,
-                matchingPercentage: ((allMatchingRecords.length / allDetections.length) * 100).toFixed(2) + '%',
-                lastUpdated: new Date().toISOString(),
-                newRecordsInThisUpdate: matchingRecords.length,
-                filteredData: allMatchingRecords
+        // Fetch all detection records for statistics
+        const allDetections = await TrainDetection.find({}).sort({ _id: 1 }).lean();
+        const recordsWithMatch = allDetections.map(detection => {
+            const matched = validTrainNumbers.has(detection.trainNumber);
+            return {
+                ...detection,
+                matched,
+                matchedTrainName: matched ? detection.trainName : null
             };
+        });
 
-            // Save results to JSON file
-            const outputPath = path.join(__dirname, 'Filter_units_results.json');
-            fs.writeFileSync(outputPath, JSON.stringify(statistics, null, 2));
+        const allMatchingRecords = recordsWithMatch.filter(record => record.matched);
+        const unmatchedRecords = recordsWithMatch.filter(record => !record.matched);
 
-            // Group by train number
-            const groupedByTrain = {};
-            allMatchingRecords.forEach(record => {
-                if (!groupedByTrain[record.trainNumber]) {
-                    groupedByTrain[record.trainNumber] = {
-                        trainName: record.trainName,
-                        count: 0,
-                        records: []
-                    };
-                }
-                groupedByTrain[record.trainNumber].count++;
-                groupedByTrain[record.trainNumber].records.push(record);
-            });
+        const statistics = {
+            totalDetectionRecords: allDetections.length,
+            totalValidTrains: validTrainNumbers.size,
+            matchingRecords: allMatchingRecords.length,
+            unmatchedRecords: unmatchedRecords.length,
+            matchingPercentage: allDetections.length > 0
+                ? ((allMatchingRecords.length / allDetections.length) * 100).toFixed(2) + '%'
+                : '0.00%',
+            lastUpdated: new Date().toISOString(),
+            newRecordsInThisUpdate: detections.filter(detection => validTrainNumbers.has(detection.trainNumber)).length,
+            records: recordsWithMatch,
+            matchedRecords: allMatchingRecords,
+            unmatchedRecordsData: unmatchedRecords
+        };
 
-            // Save grouped results
-            const groupedOutputPath = path.join(__dirname, 'Filter_units_grouped.json');
-            fs.writeFileSync(groupedOutputPath, JSON.stringify(groupedByTrain, null, 2));
+        // Save full filter output to main Filter_units JSON
+        const outputPath = path.join(__dirname, 'Filter_units.json');
+        fs.writeFileSync(outputPath, JSON.stringify(statistics, null, 2));
 
-            // Display update summary
-            console.log(`✓ Updated Filter_units files`);
-            console.log(`  Total Matching Records: ${allMatchingRecords.length}`);
-            console.log(`  Match Percentage: ${statistics.matchingPercentage}\n`);
-        }
+        // Keep the previous result file too for compatibility
+        const resultsPath = path.join(__dirname, 'Filter_units_results.json');
+        fs.writeFileSync(resultsPath, JSON.stringify(statistics, null, 2));
+
+        // Group matched records by train number
+        const groupedByTrain = {};
+        allMatchingRecords.forEach(record => {
+            if (!groupedByTrain[record.trainNumber]) {
+                groupedByTrain[record.trainNumber] = {
+                    trainName: record.trainName,
+                    count: 0,
+                    records: []
+                };
+            }
+            groupedByTrain[record.trainNumber].count++;
+            groupedByTrain[record.trainNumber].records.push(record);
+        });
+
+        const groupedOutputPath = path.join(__dirname, 'Filter_units_grouped.json');
+        fs.writeFileSync(groupedOutputPath, JSON.stringify(groupedByTrain, null, 2));
+
+        console.log(`✓ Updated Filter_units files`);
+        console.log(`  Total Records: ${statistics.totalDetectionRecords}`);
+        console.log(`  Matching Records: ${statistics.matchingRecords}`);
+        console.log(`  Unmatched Records: ${statistics.unmatchedRecords}`);
+        console.log(`  Match Percentage: ${statistics.matchingPercentage}\n`);
 
     } catch (error) {
         console.error(`✗ Error during filtering: ${error.message}`);

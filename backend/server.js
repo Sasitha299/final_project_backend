@@ -12,6 +12,7 @@ const lostRoutes = require('./routes/LostRoute');
 const telemetryRoutes = require('./routes/TelemetryRoute');
 const timetableRoutes = require('./routes/TimetableRoute');
 const trainDetectionRoutes = require('./routes/TrainDetectionRoute');
+const filterUnitsRoutes = require('./routes/FilterUnitsRoute');
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/lost', lostRoutes);
 app.use('/api/telemetry', telemetryRoutes);
 app.use('/api/timetables', timetableRoutes);
 app.use('/api/detections', trainDetectionRoutes);
+app.use('/api/filter-units', filterUnitsRoutes);
 
 // Error Handler
 app.use((err, req, res, next) => {

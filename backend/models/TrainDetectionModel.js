@@ -15,6 +15,10 @@ const trainDetectionSchema = new mongoose.Schema({
         required: [true, 'Please add a train number'],
         index: true
     },
+    originalTrainNumber: {
+        type: String,
+        default: null
+    },
     trainName: {
         type: String,
         required: [true, 'Please add a train name']
